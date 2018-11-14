@@ -1,0 +1,17 @@
+{
+    "name": "brunogoossens/easy-lti",
+    "description": "LTI 1.1 Provider library for PHP.",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Bruno Goossens",
+            "email": "brunogoossens@gmail.com"
+        }
+    ],
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "BrunoGoossens\\LTI\\": "src/"
+        }
+    }
+}

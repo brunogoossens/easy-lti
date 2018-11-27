@@ -196,8 +196,7 @@ class LTIProvider
         $response = curl_exec($ch);
         curl_close($ch);
 
-        var_dump($response);
-
-        exit;
+        // var_dump($response);
+        // exit;
     }
 }

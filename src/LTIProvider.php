@@ -17,12 +17,6 @@ class LTIProvider
 
     public function validateRequest()
     {
-        if (!$this->validMessageType()) {
-            throw new \Exception("Invalid LTI message type");
-        }
-        if (!$this->validVersion()) {
-            throw new \Exception("Invalid LTI version");
-        }
         if (!$this->validNonce()) {
             throw new \Exception("Invalid oauth nonce value");
         }
@@ -58,22 +52,6 @@ class LTIProvider
         }
 
         return false;
-    }
-
-    private function validMessageType()
-    {
-        if ($_REQUEST['lti_message_type'] !== 'basic-lti-launch-request') {
-            return false;
-        }
-        return true;
-    }
-
-    private function validVersion()
-    {
-        if ($_REQUEST['lti_version'] !== 'LTI-1p0') {
-            return false;
-        }
-        return true;
     }
 
     private function validNonce()

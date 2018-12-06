@@ -41,14 +41,11 @@ $contentItems = array(
   array(
     '@type' => 'LtiLinkItem',
     'mediaType' => 'application/vnd.ims.lti.v1.ltilink',
-    'title' => $task->title,
+    'title' => 'dummy title',
     'icon' => array(
-      '@id' => $server_protocol . $_SERVER['SERVER_NAME'].'/curios2/code/img/curios_small.gif',
+      '@id' => 'https://example.com/icon.jpeg',
       'width' => 32,
       'height' => 32
-    ),
-    'custom' => array(
-      'task' => $_GET['task']
     )
   )
 );

@@ -1,12 +1,10 @@
 # Easy LTI 1.1 Provider
 
-This is a PHP library to connect your PHP application to an LTI consumer platform with outcome support.
+This is a PHP library to connect your PHP application to an LTI consumer platform with outcome and deeplinking support.
 
 # Install library
 
-```bash
-$ composer require brunogoossens/easy-lti
-```
+    @TODO add this library to packagist.org so an easy composer install and autoload is possible.
 
 # How to use
 
@@ -34,8 +32,28 @@ $lti->readScore($outcome_service_url, $result_sourcedid);
 $lti->postScore($outcome_service_url, $result_sourcedid, 0.7); // score is a value between 0 and 1.
 ```
 
-## Convert roles to a nice array
+## Deeplinking (Content-Item Message)
+
+Insert content items into the tool consumer.
 
 ```php
-$roles = LTIProvider::convertRoles($_REQUEST['roles']);
+$contentItems = array(
+  array(
+    '@type' => 'LtiLinkItem',
+    'mediaType' => 'application/vnd.ims.lti.v1.ltilink',
+    'title' => $task->title,
+    'icon' => array(
+      '@id' => $server_protocol . $_SERVER['SERVER_NAME'].'/curios2/code/img/curios_small.gif',
+      'width' => 32,
+      'height' => 32
+    ),
+    'custom' => array(
+      'task' => $_GET['task']
+    )
+  )
+);
+
+$lti->returnContentItems($url, $contentItems);
 ```
+
+This action will submit an auto generated form back to the tool consumer.

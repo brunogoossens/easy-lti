@@ -128,7 +128,7 @@ class LTIProvider
             trim(file_get_contents(__DIR__ . '/templates/replaceResult.xml'))
         );
 
-        $this->doXMLRequest($outcome_service_url, $xml);
+        return $this->doPostRequest($outcome_service_url, $xml, 'application/xml');
     }
 
     public function readScore($outcome_service_url, $sourcedid)
@@ -139,18 +139,43 @@ class LTIProvider
             trim(file_get_contents(__DIR__ . '/templates/readResult.xml'))
         );
 
-        $this->doXMLRequest($outcome_service_url, $xml);
+        return $this->doPostRequest($outcome_service_url, $xml, 'application/xml');
     }
 
-    private function doXMLRequest($outcome_service_url, $xml)
+    public function returnContentItems($url, $contentItems)
+    {
+        $contentItems = array(
+          '@context' => 'http://purl.imsglobal.org/ctx/lti/v1/ContentItem',
+          '@graph' => $contentItems
+        );
+
+        $fields = array(
+            'oauth_version' => '1.0',
+            'oauth_nonce' => md5(microtime() . mt_rand()),
+            'oauth_timestamp' => time(),
+            'oauth_consumer_key' => $this->key,
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_callback' => 'about:blank',
+            'lti_message_type' => 'ContentItemSelection',
+            'lti_version' => 'LTI-1p0',
+            'content_items' => json_encode($contentItems)
+        );
+
+        $fields['oauth_signature'] = $this->makeSignature($url, 'POST', $fields);
+
+        include(__DIR__.'/templates/autoLTIFormSubmit.php');
+    }
+
+    public function doPostRequest($url, $data, $contentType)
     {
         $method = 'POST';
+
         $oauth_params = array(
             'oauth_version' => '1.0',
             'oauth_nonce' => md5(microtime() . mt_rand()),
             'oauth_timestamp' => time(),
             'oauth_consumer_key' => $this->key,
-            'oauth_body_hash' => base64_encode(sha1($xml, true)),
+            'oauth_body_hash' => base64_encode(sha1($data, true)),
             'oauth_signature_method' => 'HMAC-SHA1',
         );
 
@@ -158,23 +183,22 @@ class LTIProvider
         foreach ($oauth_params as $key => $param) {
             $headers[0] .= ',' . rawurlencode($key) . '="' . rawurlencode($param) . '"';
         }
-        $headers[0] .= ',oauth_signature="' . rawurlencode($this->makeSignature($outcome_service_url, $method, $oauth_params)) . '"';
-        $headers[1] = 'Content-Type: application/xml';
+        $headers[0] .= ',oauth_signature="' . rawurlencode($this->makeSignature($url, $method, $oauth_params)) . '"';
+        $headers[1] = 'Content-Type: '.$contentType;
         $headers[2] = "";
 
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $outcome_service_url);
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         $response = curl_exec($ch);
         curl_close($ch);
 
-        // var_dump($response);
-        // exit;
+        return $response;
     }
 }

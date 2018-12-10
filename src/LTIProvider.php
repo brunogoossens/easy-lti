@@ -2,8 +2,6 @@
 
 namespace BrunoGoossens\LTI;
 
-use Symfony\Component\HttpFoundation\Request;
-
 class LTIProvider
 {
     private $key;

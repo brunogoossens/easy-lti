@@ -90,7 +90,7 @@ class LTIProvider
         }
         $strParams = implode('&', $sortedParamsByKeyEncodedForm);
         $method = strtoupper($_SERVER['REQUEST_METHOD']);
-        $url = ($_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . strtok($_SERVER["REQUEST_URI"], '?');
+        $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . strtok($_SERVER["REQUEST_URI"], '?');
 
         $base = $method . '&' . rawurlencode($url) . '&' . rawurlencode($strParams);
         $key = rawurlencode($this->secret) . '&';

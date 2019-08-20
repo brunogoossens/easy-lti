@@ -81,7 +81,7 @@ class LTIProvider
         $requestSignature = $_REQUEST['oauth_signature'];
 
         // generate singature
-        $params = $_REQUEST;
+        $params = array_merge($_GET, $_POST);
         unset($params['oauth_signature']);
         ksort($params);
         $sortedParamsByKeyEncodedForm = array();
